@@ -57,13 +57,10 @@ P0 := NewStatusDef(0, $FFFF, P1, nil);
 StatusLine := New(PStatusLine, Init(R, P0));
 end;
 
-(* Menu items can also be split using pointers.
-Whether you nest or split them is a matter of preference.
-``` can be used to insert a blank line.
-``` is recommended if a dialog box opens for a menu item.
-
-``` after the label is ```.
-
+(* 
+Menu items can also be split using pointers.
+Whether you nest or split them is a matter of preference. You can insert a blank line using `<b>NewLine</b>`.
+It is recommended to write `<b>...</b>` after the label if a dialog box opens for a menu item.
 *)
 
 R.B.Y := R.A.Y + 1; 
