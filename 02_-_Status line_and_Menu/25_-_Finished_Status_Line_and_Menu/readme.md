@@ -13,7 +13,7 @@ Nothing happens after **OS shell** and **Exit**.
 
 
 
-``` ---
+---
 Using **StdStatusKeys(...)**, a status line is created, but as described above, no text is displayed.
 
 ```pascal
