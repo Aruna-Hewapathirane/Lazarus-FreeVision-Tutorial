@@ -31,7 +31,6 @@ Borland Pascal:
 | March 15, 2020 | Fixed issue with FormatStr and 64-bit OS.
 | July 9, 2019 | **Hello World** bug fixed in HTML.
 | July 7, 2018 | Outline added.
-
 | July 1, 2018 | Help menu added.
 
 ![FreeVision](image.png)
