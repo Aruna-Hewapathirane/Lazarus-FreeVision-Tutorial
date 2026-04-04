@@ -1,214 +1,173 @@
 //image image.png
 (*
-Bis jetzt gingen die Werte im Dialog immer wieder verloren, wen man diesen schliesste und wieder öffnete.
-Aus diesem Grund werden jetzt die Werte in einen Record gespeichert.
+Until now, the values in the dialogue were always lost whenever it was closed and reopened.
+For this reason, the values are now saved in a record.
 *)
-//lineal
-program Project1;
+//ruler
+programProject1;
 
-uses
-  App,      // TApplication
-  Objects,  // Fensterbereich (TRect)
-  Drivers,  // Hotkey
-  Views,    // Ereigniss (cmQuit)
-  Menus,    // Statuszeile
-  Dialogs;  // Dialoge
+uses 
+App, // TApplication 
+Objects, // Window area (TRect) 
+Drivers, // Hotkey 
+Views, // event (cmQuit) 
+Menus, // status line 
+dialogue; // Dialogues
 
-const
-  cmAbout = 1001;     // About anzeigen
-  cmList = 1002;      // Datei Liste
-  cmPara = 1003;      // Parameter
+const 
+cmAbout = 1001; // Show About 
+cmList = 1002; // file list 
+cmPara = 1003; // Parameters 
 
-  (*
-  In diesem Record werden die Werte des Dialoges gespeichert.
-  Die Reihenfolge der Daten im Record <b>muss</b> genau gleich sein, wie bei der Erstellung der Komponenten, ansonten gibt es einen Kräsch.
-  Bei Turbo-Pascal musste ein <b>Word</b> anstelle von <b>LongWord</b> genommen werden, dies ist wichtig beim Portieren alter Anwendungen.
-  *)
-  //code+
-type
-  TParameterData = record
-    Druck,
-    Schrift: longword;
-    Hinweis: string[50];
-  end;
-  //code-
+(* 
+The values of the dialog are stored in this record. 
+The order of the data in the record <b>must</b> be exactly the same as when the components were created, otherwise there will be a crash. 
+With Turbo Pascal, a <b>Word</b> had to be used instead of <b>LongWord</b>; this is important when porting old applications. 
+*) 
+//code+
+type.type 
+TParameterData = record 
+pressure, 
+font: longword; 
+Note: string[50]; 
+end; 
+//code-
 
 (*
-Hier wird noch der Constructor vererbt, diesen Nachkomme wird gebraucht um die Dialogdaten mit Standard Werte zu laden.
-*)
-  //code+
-type
-  TMyApp = object(TApplication)
-    ParameterData: TParameterData;                     // Daten für Parameter-Dialog
-    constructor Init;                                  // Neuer Constructor
+Here the constructor is inherited; this descendant is needed to load the dialog data with standard values.
+*) 
+//code+
+type.type 
+TMyApp = object(TApplication) 
+ParameterData: TParameterData; // Data for parameter dialog 
+constructor Init; // New constructor 
 
-    procedure InitStatusLine; virtual;                 // Statuszeile
-    procedure InitMenuBar; virtual;                    // Menü
-    procedure HandleEvent(var Event: TEvent); virtual; // Eventhandler
+procedure InitStatusLine; virtual; // Status line 
+procedure InitMenuBar; virtual; // Menu 
+procedure HandleEvent(var Event: TEvent); virtual; // event handler 
 
-    procedure MyParameter;                             // neue Funktion für einen Dialog.
-  end;
-  //code-
-
-(*
-Der Constructoer welcher die Werte für den Dialog ladet.
-Die Datenstruktur für die RadioButtons ist einfach. 0 ist der erste Button, 1 der Zweite, 2 der Dritte, usw.
-Bei den Checkboxen macht man es am besten Binär. Im Beispiel werden der erste und dritte CheckBox gesetzt.
-*)
-  //code+
-  constructor TMyApp.Init;
-  begin
-    inherited Init;     // Vorfahre aufrufen
-    with ParameterData do begin
-      Druck := %0101;
-      Schrift := 2;
-      Hinweis := 'Hello world';
-    end;
-  end;
-  //code-
-
-  procedure TMyApp.InitStatusLine;
-  var
-    R: TRect;                 // Rechteck für die Statuszeilen Position.
-
-    P0: PStatusDef;           // Pointer ganzer Eintrag.
-    P1, P2, P3: PStatusItem;  // Poniter auf die einzelnen Hot-Key.
-  begin
-    GetExtent(R);
-    R.A.Y := R.B.Y - 1;
-
-    P3 := NewStatusKey('~F1~ Hilfe', kbF1, cmHelp, nil);
-    P2 := NewStatusKey('~F10~ Menu', kbF10, cmMenu, P3);
-    P1 := NewStatusKey('~Alt+X~ Programm beenden', kbAltX, cmQuit, P2);
-    P0 := NewStatusDef(0, $FFFF, P1, nil);
-
-    StatusLine := New(PStatusLine, Init(R, P0));
-  end;
-
-  procedure TMyApp.InitMenuBar;
-  var
-    R: TRect;                       // Rechteck für die Menüzeilen-Position.
-
-    M: PMenu;                       // Ganzes Menü
-    SM0, SM1, SM2,                  // Submenu
-    M0_0, M0_2, M0_3, M0_4, M0_5,
-    M1_0, M2_0: PMenuItem;          // Einfache Menüpunkte
-
-  begin
-    GetExtent(R);
-    R.B.Y := R.A.Y + 1;
-
-    M2_0 := NewItem('~A~bout...', '', kbNoKey, cmAbout, hcNoContext, nil);
-    SM2 := NewSubMenu('~H~ilfe', hcNoContext, NewMenu(M2_0), nil);
-
-    M1_0 := NewItem('~P~arameter...', '', kbF2, cmPara, hcNoContext, nil);
-    SM1 := NewSubMenu('~O~ption', hcNoContext, NewMenu(M1_0), SM2);
-
-    M0_5 := NewItem('~B~eenden', 'Alt-X', kbAltX, cmQuit, hcNoContext, nil);
-    M0_4 := NewLine(M0_5);
-    M0_3 := NewItem('S~c~hliessen', 'Alt-F3', kbAltF3, cmClose, hcNoContext, M0_4);
-    M0_2 := NewLine(M0_3);
-    M0_0 := NewItem('~L~iste', 'F2', kbF2, cmList, hcNoContext, M0_2);
-    SM0 := NewSubMenu('~D~atei', hcNoContext, NewMenu(M0_0), SM1);
-
-    M := NewMenu(SM0);
-
-    MenuBar := New(PMenuBar, Init(R, M));
-  end;
-
-  procedure TMyApp.HandleEvent(var Event: TEvent);
-  begin
-    inherited HandleEvent(Event);
-
-    if Event.What = evCommand then begin
-      case Event.Command of
-        cmAbout: begin
-        end;
-        cmList: begin
-        end;
-        cmPara: begin
-          MyParameter;
-        end;
-        else begin
-          Exit;
-        end;
-      end;
-    end;
-    ClearEvent(Event);
-  end;
+procedure MyParameter; // new function for a dialog. 
+end; 
+//code-
 
 (*
-Der Dialog wird jetzt mit Werten geladen.
-Dies macht man, sobald man fertig ist mit Komponenten ertstellen.
-*)
-  //code+
-  procedure TMyApp.MyParameter;
-  var
-    Dlg: PDialog;
-    R: TRect;
-    dummy: word;
-    View: PView;
-  begin
-    R.Assign(0, 0, 35, 15);
-    R.Move(23, 3);
-    Dlg := New(PDialog, Init(R, 'Parameter'));
-    with Dlg^ do begin
+The constructor that loads the values for the dialog.
+The data structure for the RadioButtons is simple. 0 is the first button, 1 is the second, 2 is the third, etc.
+When it comes to checkboxes, it's best to do it in binary. In the example, the first and third CheckBox are set.
+*) 
+//code+ 
+constructor TMyApp.Init; 
+begin 
+inherited Init; // Call ancestor 
+with ParameterData do begin 
+pressure := %0101; 
+font := 2; 
+Note := 'Hello world'; 
+end; 
+end; 
+//code- 
 
-      // CheckBoxen
-      R.Assign(2, 3, 18, 7);
-      View := New(PCheckBoxes, Init(R,
-        NewSItem('~D~atei',
-        NewSItem('~Z~eile',
-        NewSItem('D~a~tum',
-        NewSItem('~Z~eit',
-        nil))))));
-      Insert(View);
-      // Label für CheckGroup.
-      R.Assign(2, 2, 10, 3);
-      Insert(New(PLabel, Init(R, 'Dr~u~cken', View)));
+procedure TMyApp.InitStatusLine; 
+var 
+R: TRect; // Rectangle for the status line position. 
 
-      // RadioButton
-      R.Assign(21, 3, 33, 6);
-      View := New(PRadioButtons, Init(R,
-        NewSItem('~G~ross',
-        NewSItem('~M~ittel',
-        NewSItem('~K~lein',
-        nil)))));
-      Insert(View);
-      // Label für RadioGroup.
-      R.Assign(20, 2, 31, 3);
-      Insert(New(PLabel, Init(R, '~S~chrift', View)));
+P0: PStatusDef; // Pointer entire entry. 
+P1, P2, P3: PStatusItem; // Poniter on the individual hot key. 
+begin 
+GetExtent(R); 
+R.A.Y := R.B.Y - 1; 
 
-      // Edit Zeile
-      R.Assign(3, 10, 32, 11);
-      View := New(PInputLine, Init(R, 50));
-      Insert(View);
-      // Label für Edit Zeile
-      R.Assign(2, 9, 10, 10);
-      Insert(New(PLabel, Init(R, '~H~inweis', View)));
+P3 := NewStatusKey('~F1~ Help', kbF1, cmHelp, nil); 
+P2 := NewStatusKey('~F10~ Menu', kbF10, cmMenu, P3); 
+P1 := NewStatusKey('~Alt+X~ Quit program', kbAltX, cmQuit, P2); 
+P0 := NewStatusDef(0, $FFFF, P1, nil); 
 
-      // Ok-Button
-      R.Assign(7, 12, 17, 14);
-      Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault)));
+StatusLine := New(PStatusLine, Init(R, P0)); 
+end; 
 
-      // Schliessen-Button
-      R.Assign(19, 12, 32, 14);
-      Insert(new(PButton, Init(R, '~A~bbruch', cmCancel, bfNormal)));
-    end;
-    Dlg^.SetData(ParameterData);      // Dialog mit den Werten laden.
-    dummy := Desktop^.ExecView(Dlg);  // Dialog ausführen.
-    if dummy = cmOK then begin        // Wen Dialog mit Ok beenden, dann Daten vom Dialog in Record laden.
-      Dlg^.GetData(ParameterData);
-    end;
+procedure TMyApp.InitMenuBar; 
+var 
+R: TRect; // Rectangle for the menu line position. 
 
-    Dispose(Dlg, Done);               // Dialog und Speicher frei geben.
-  end;
-  //code-
-var
-  MyApp: TMyApp;
+M: PMenu; // Entire menu 
+SM0, SM1, SM2, // Submenu 
+M0_0, M0_2, M0_3, M0_4, M0_5, 
+M1_0, M2_0: PMenuItem; // Simple menu items 
 
-begin
-  MyApp.Init;   // Inizialisieren
-  MyApp.Run;    // Abarbeiten
-  MyApp.Done;   // Freigeben
-end.
+begin 
+GetExtent(R); 
+R.B.Y := R.A.Y + 1; 
+
+M2_0 := NewItem('~A~bout...', '', kbNoKey, cmAbout, hcNoContext, nil); 
+SM2 := NewSubMenu('~Help', hcNoContext, NewMenu(M2_0), nil); 
+
+M1_0 := NewItem('~Parameter...', '', kbF2, cmPara, hcNoContext, nil); 
+SM1 := NewSubMenu('~O~ption', hcNoContext, NewMenu(M1_0), SM2); 
+
+M0_5 := NewItem('~B~end', 'Alt-X', kbAltX, cmQuit, hcNoContext, nil); 
+M0_4 := NewLine(M0_5); 
+M0_3 := NewItem('S~c~hliessen', 'Alt-F3', kbAltF3, cmClose, hcNoContext, M0_4); 
+M0_2 := NewLine(M0_3); 
+M0_0 := NewItem('~L~iste', 'F2', kbF2, cmList, hcNoContext, M0_2); 
+SM0 := NewSubMenu('~File', hcNoContext, NewMenu(M0_0), SM1); 
+
+M := NewMenu(SM0); 
+
+MenuBar := New(PMenuBar, Init(R, M)); 
+end; 
+
+procedure TMyApp.HandleEvent(var Event: TEvent); 
+begin 
+inherited HandleEvent(Event); 
+
+if Event.What = evCommand then begin 
+case Event.Command of 
+cmAbout: begin 
+end; 
+cmList: begin 
+end; 
+cmPara: begin 
+MyParameters; 
+end; 
+else begin 
+exit; 
+end; 
+end; 
+end; 
+ClearEvent(Event); 
+end;
+
+(*
+The dialog is now loaded with values.
+You do this as soon as you have finished creating components.
+*) 
+//code+ 
+procedure TMyApp.MyParameter; 
+var 
+Dlg: PDialog; 
+R: TRect; 
+dummy: word; 
+View: PView; 
+begin 
+R.Assign(0, 0, 35, 15); 
+R.Move(23, 3); 
+Dlg := New(PDialog, Init(R, 'Parameter')); 
+with Dlg^ do begin 
+
+// CheckBoxes 
+R.Assign(2, 3, 18, 7); 
+View := New(PCheckBoxes, Init(R, 
+NewSItem('~File', 
+NewSItem('~row~row', 
+NewSItem('D~a~tum', 
+NewSItem('~Time~', 
+nil)))))); 
+Insert(View); 
+// Label for CheckGroup. 
+R.Assign(2, 2, 10, 3); 
+Insert(New(PLabel, Init(R, 'Press', View))); 
+
+// RadioButton 
+R.Assign(21, 3, 33, 6); 
+View := New(PRadioButtons, Init(R, 
+NewSIt
