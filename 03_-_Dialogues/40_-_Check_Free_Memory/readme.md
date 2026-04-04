@@ -1,108 +1,106 @@
-# 03 - Dialoge
-## 40 - Freien Speicher ueberpruefen
+# 03 - Dialogues
+## 40 - Check free memory
 
 ![image.png](image.png)
 
-Überprüfen ob genügend Speicher frei ist, um den Dialog zu erzeugen.
-Auf den heutigen Rechner wird die wohl nicht mehr der Fall sein, das der Speicher wegen eines Dialoges überläuft.
+Check whether there is enough memory free to create the dialog.
+On today's computers it will probably no longer be the case that the memory overflows because of a dialog.
 
 ---
-Die virtuelle Procedure **OutOfMemory**, wen doch mal der Speicher überläuft.
-Wen man diese Methode nicht überschreibt, dann wird keine Fehlermeldung ausgegeben, nur weis dann der Nutzer nicht, wieso sein View nicht erscheint.
+The virtual procedure **OutOfMemory**, when the memory overflows.
+If you don't overwrite this method, no error message will be output, but the user won't know why their view doesn't appear.
 
 ```pascal
-type
-  TMyApp = object(TApplication)
-    ParameterData: TParameterData;                     // Parameter für Dialog.
-    constructor Init;                                  // Neuer Constructor
+type.type 
+TMyApp = object(TApplication) 
+ParameterData: TParameterData; // Parameters for dialog. 
+constructor Init; // New constructor 
 
-    procedure InitStatusLine; virtual;                 // Statuszeile
-    procedure InitMenuBar; virtual;                    // Menü
-    procedure HandleEvent(var Event: TEvent); virtual; // Eventhandler
-    procedure OutOfMemory; virtual;                    // Wird aufgerufen, wen Speicher überläuft.
+procedure InitStatusLine; virtual; // Status line 
+procedure InitMenuBar; virtual; // Menu 
+procedure HandleEvent(var Event: TEvent); virtual; // event handler 
+procedure OutOfMemory; virtual; // Called when memory overflows. 
 
-    procedure MyParameter;                             // neue Funktion für einen Dialog.
-  end;
+procedure MyParameter; // new function for a dialog. 
+end;
 ```
 
-Die Procedure wird aufgerufen, wen zu wenig Speicher vorhanden ist.
+The procedure is called when there is not enough memory available.
 
-```pascal
-  procedure TMyApp.OutOfMemory;
-  begin
-    MessageBox('Zu wenig Arbeitsspeicher !', nil, mfError + mfOkButton);
-  end;
+```pascal 
+procedure TMyApp.OutOfMemory; 
+begin 
+MessageBox('Too little memory !', nil, mfError + mfOkButton); 
+end;
 ```
 
-Der Dialog wird jetzt mit Werten geladen.
-Dies macht man, sobald man fertig ist mit Komponenten ertstellen.
-Mit **ValidView(...** prüft man ob genügend Specher vorhanden ist, um die Komponente zu erzeugen.
-Wen nicht, kommt **nil<(b> zurück. Dabei spielt es keine Rolle, ob man **OutOfMemory** überschreibt.
+The dialog is now loaded with values.
+You do this as soon as you have finished creating components.
+With **ValidView(...** you check whether there is enough memory available to create the component.
+If not, **nil<(b> comes back. It doesn't matter whether you overwrite **OutOfMemory**.
 
-```pascal
-  procedure TMyApp.MyParameter;
-  var
-    Dlg: PDialog;
-    R: TRect;
-    dummy: word;
-    View: PView;
-  begin
-    R.Assign(0, 0, 35, 15);
-    R.Move(23, 3);
-    Dlg := New(PDialog, Init(R, 'Parameter'));
-    with Dlg^ do begin
+```pascal 
+procedure TMyApp.MyParameter; 
+var 
+Dlg: PDialog; 
+R: TRect; 
+dummy: word; 
+View: PView; 
+begin 
+R.Assign(0, 0, 35, 15); 
+R.Move(23, 3); 
+Dlg := New(PDialog, Init(R, 'Parameter')); 
+with Dlg^ do begin 
 
-      // CheckBoxen
-      R.Assign(2, 3, 18, 7);
-      View := New(PCheckBoxes, Init(R,
-        NewSItem('~D~atei',
-        NewSItem('~Z~eile',
-        NewSItem('D~a~tum',
-        NewSItem('~Z~eit',
-        nil))))));
-      Insert(View);
-      // Label für CheckGroup.
-      R.Assign(2, 2, 10, 3);
-      Insert(New(PLabel, Init(R, 'Dr~u~cken', View)));
+// CheckBoxes 
+R.Assign(2, 3, 18, 7); 
+View := New(PCheckBoxes, Init(R, 
+NewSItem('~File', 
+NewSItem('~row~row', 
+NewSItem('D~a~tum', 
+NewSItem('~Time~', 
+nil)))))); 
+Insert(View); 
+// Label for CheckGroup. 
+R.Assign(2, 2, 10, 3); 
+Insert(New(PLabel, Init(R, 'Press', View))); 
 
-      // RadioButton
-      R.Assign(21, 3, 33, 6);
-      View := New(PRadioButtons, Init(R,
-        NewSItem('~G~ross',
-        NewSItem('~M~ittel',
-        NewSItem('~K~lein',
-        nil)))));
-      Insert(View);
-      // Label für RadioGroup.
-      R.Assign(20, 2, 31, 3);
-      Insert(New(PLabel, Init(R, '~S~chrift', View)));
+// RadioButton 
+R.Assign(21, 3, 33, 6); 
+View := New(PRadioButtons, Init(R, 
+NewSItem('~Big~ross', 
+NewSItem('~Medium', 
+NewSItem('~Small', 
+nile))))); 
+Insert(View); 
+// Label for RadioGroup. 
+R.Assign(20, 2, 31, 3); 
+Insert(New(PLabel, Init(R, '~Font', View))); 
 
-      // Edit Zeile
-      R.Assign(3, 10, 32, 11);
-      View := New(PInputLine, Init(R, 50));
-      Insert(View);
-      // Label für Edit Zeile
-      R.Assign(2, 9, 10, 10);
-      Insert(New(PLabel, Init(R, '~H~inweis', View)));
+// Edit line 
+R.Assign(3, 10, 32, 11); 
+View := New(PInputLine, Init(R, 50)); 
+Insert(View); 
+// Label for edit line 
+R.Assign(2, 9, 10, 10); 
+Insert(New(PLabel, Init(R, '~H~inweis', View))); 
 
-      // Ok-Button
-      R.Assign(7, 12, 17, 14);
-      Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault)));
+// Ok button 
+R.Assign(7, 12, 17, 14); 
+Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault))); 
 
-      // Schliessen-Button
-      R.Assign(19, 12, 32, 14);
-      Insert(new(PButton, Init(R, '~A~bbruch', cmCancel, bfNormal)));
-    end;
-    if ValidView(Dlg) <> nil then begin // Prüfen ob genügend Speicher.
-      Dlg^.SetData(ParameterData);      // Dialog mit den Werten laden.
-      dummy := Desktop^.ExecView(Dlg);  // Dialog ausführen.
-      if dummy = cmOK then begin        // Wen Dialog mit Ok beenden, dann Daten vom Dialog in Record laden.
-        Dlg^.GetData(ParameterData);
-      end;
+// Close button 
+R.Assign(19, 12, 32, 14); 
+Insert(new(PButton, Init(R, '~A~abort', cmCancel, bfNormal))); 
+end; 
+if ValidView(Dlg) <> nil then begin // Check whether there is enough memory. 
+Dlg^.SetData(ParameterData); // Load dialog with the values. 
+dummy := Desktop^.ExecView(Dlg); // Execute dialog. 
+if dummy = cmOK then begin // If you end the dialog with Ok, then load data from the dialog into Record. 
+Dlg^.GetData(ParameterData); 
+end; 
 
-      Dispose(Dlg, Done);               // Dialog und Speicher frei geben.
-    end;
-  end;
+Dispose(Dlg, Done); // Free up dialog and memory. 
+end; 
+end;
 ```
-
-
