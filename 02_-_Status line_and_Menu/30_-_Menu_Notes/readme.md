@@ -41,8 +41,6 @@ GetExtent(R);
 
 R.B.Y := R.A.Y + 1;
 
-
-```
 MenuBar := New(PMenuBar, Init(R, NewMenu( 
 NewSubMenu('~File', hcFile, NewMenu( 
 NewItem('~B~end', 'Alt-X', kbAltX, cmQuit, hcClose, nil)), 
@@ -52,6 +50,7 @@ NewItem('~F~ormat', '', kbNoKey, cmAbout, hcFormat,
 NewItem('~E~itor', '', kbNoKey, cmAbout, hcEdit, nil))), 
 
 NewSubMenu('~Help', hcHelp, NewMenu( 
-NewItem('~A~bout...', '', kbNoKey, cmAbout, hcAbout, nil)), nil)))))); 
+NewItem('~A~bout...', '', kbNoKey, cmAbout, hcAbout, nil)), nil))))));
+```
 end;
 ```
