@@ -46,22 +46,16 @@ R.A.Y := R.B.Y - 1;
 / Status line (German)
 
 StatusGer := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
-
 NewStatusKey('~Alt+X~ Exit Program', kbAltX, cmQuit,
-
 NewStatusKey('~F10~ Menu', kbF10, cmMenu,
-
 NewStatusKey('~F1~ Help', kbF1, cmHelp, nil))), nil)));
 
 
 // Status bar (English)
 
 StatusEng := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
-
 NewStatusKey('~Alt+X~ Exit', kbAltX, cmQuit,
-
 NewStatusKey('~F10~ Menu', kbF10, cmMenu,
-
 NewStatusKey('~F1~ Help', kbF1, cmHelp, nil))), nil)));
 
 StatusLine := StatusGer; // German by default
