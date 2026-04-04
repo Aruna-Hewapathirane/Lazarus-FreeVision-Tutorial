@@ -26,9 +26,7 @@ In this example, the status line is changed; to do this, you have to override th
 //code+
 type
 TMyApp = object(TApplication)
-
 procedure InitStatusLine; virtual;
-
 end;
 
 //code.
@@ -50,18 +48,12 @@ To make the hotkey more visible, enclose it in <b>~xxx~</b>.
 procedure TMyApp.InitStatusLine;
 
 var
-
 R: TRect; // Rectangle for the status bar position.
 
 begin
-
 GetExtent(R); // Returns the size/position of the app, normally 0, 0, 80, 24.
-
 R.A.Y := R.B.Y - 1; // Position of the status bar, set to the bottom line of the app.
-
-
 StatusLine := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF, NewStatusKey('~Alt+X~ Exit Program', kbAltX, cmQuit, nil), nil)));
-
 end;
 
 //code-
