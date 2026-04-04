@@ -6,7 +6,8 @@ For normal desktop applications, this is true.But there are applications where i
 
 Or a server that doesn't have a graphical interface.
 
-Which Linux enthusiast hasn't had to deal with **vi** or **nemo** at some point? If Linux had an FV editor built in, life would be much easier. ;-)
+Which Linux enthusiast hasn't had to deal with **vi** or **nemo** at some point? 
+If Linux had an FV editor built in, life would be much easier. ;-)
 
 For this reason, I'm currently working with **Free Vision**.
 
