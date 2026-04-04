@@ -1,45 +1,45 @@
-# 03 - Dialoge
-## 15 - CheckBoxen
+#03 - Dialogues
+## 15 - CheckBoxes
 
 ![image.png](image.png)
 
-Dialog um CheckBoxen ergänzen.
+Add checkboxes to the dialog.
 
 ---
-Den Dialog mit CheckBoxen ergänzen.
+Supplement the dialogue with check boxes.
 
-```pascal
-procedure TMyApp.MyParameter;
-var
-Dlg: PDialog;
-R: TRect;
-dummy: word;
-View: PView;
-begin
-R.Assign(0, 0, 35, 15);
-R.Move(23, 3);
-Dlg := New(PDialog, Init(R, 'Parameter'));
-with Dlg^ do begin
+```pascal 
+procedure TMyApp.MyParameter; 
+var 
+Dlg: PDialog; 
+R: TRect; 
+dummy: word; 
+View: PView; 
+begin 
+R.Assign(0, 0, 35, 15); 
+R.Move(23, 3); 
+Dlg := New(PDialog, Init(R, 'Parameter')); 
+with Dlg^ do begin 
 
-// CheckBoxen
-R.Assign(4, 3, 18, 7);
-View := New(PCheckBoxes, Init(R,
-NewSItem('~D~atei',
-NewSItem('~Z~eile',
-NewSItem('D~a~tum',
-NewSItem('~Z~eit',
-nil))))));
-Insert(View);
+// CheckBoxes 
+R.Assign(4, 3, 18, 7); 
+View := New(PCheckBoxes, Init(R, 
+NewSItem('~File', 
+NewSItem('~row~row', 
+NewSItem('D~a~tum', 
+NewSItem('~Time~', 
+nil)))))); 
+Insert(View); 
 
-// Ok-Button
-R.Assign(7, 12, 17, 14);
-Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault)));
+// Ok button 
+R.Assign(7, 12, 17, 14); 
+Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault))); 
 
-// Schliessen-Button
-R.Assign(19, 12, 32, 14);
-Insert(new(PButton, Init(R, '~A~bbruch', cmCancel, bfNormal)));
-end;
-dummy := Desktop^.ExecView(Dlg);   // Dialog Modal öffnen.
-Dispose(Dlg, Done);                // Dialog und Speicher frei geben.
+// Close button 
+R.Assign(19, 12, 32, 14); 
+Insert(new(PButton, Init(R, '~A~abort', cmCancel, bfNormal))); 
+end; 
+dummy := Desktop^.ExecView(Dlg); // Open dialog modal. 
+Dispose(Dlg, Done); // Free up dialog and memory. 
 end;
 ```
