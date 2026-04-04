@@ -13,32 +13,20 @@ I also find this clearer than a jungle of variables.
 ```pascal
 
 procedure TMyApp.InitStatusLine;
-
 var
-
 R: TRect; // Rectangle for the status bar position.
-
 begin
-
 GetExtent(R);
-
 R.A.Y := R.B.Y - 1;
-
 StatusLine := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
-
 NewStatusKey('~Alt+X~ Exit Program', kbAltX, cmQuit,
-
 NewStatusKey('~F10~ Menu', kbF10, cmMenu,
-
 NewStatusKey('~F1~ Help', kbF1, cmHelp, nil))), nil)));
-
 end;
 
 ```
 
-The following example demonstrates a nested menu.
-
-The menu creation process is also nested.
+The following example demonstrates a nested menu. The menu creation process is also nested.
 
 ```File
 Exit
