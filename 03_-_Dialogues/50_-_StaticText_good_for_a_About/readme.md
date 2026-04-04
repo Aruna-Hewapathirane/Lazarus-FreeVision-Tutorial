@@ -1,100 +1,98 @@
-# 03 - Dialoge
-## 50 - StaticText gut fuer ein About
+# 03 - Dialogues
+## 50 - StaticText good for an About
 
 ![image.png](image.png)
 
-Hier wird ein About-Dialog erstellt, das sieht man gut für was man Label gebrauchen kann.
+An about dialog is created here, which shows clearly what labels can be used for.
 
 ---
-Die Datei, in welcher sich die Daten für den Dialog befinden.
+The file in which the data for the dialog is located.
 
 ```pascal
-const
-  DialogDatei = 'parameter.cfg';
+const 
+DialogFile = 'parameter.cfg';
 ```
 
-Eine neue Funktion **About** ist hinzugekommen.
+A new function **About** has been added.
 
 ```pascal
-type
-  TMyApp = object(TApplication)
-    ParameterData: TParameterData;                     // Parameter für Dialog.
-    fParameterData: file of TParameterData;            // File-Hander füe das speichern/laden der Daten des Dialoges.
+type.type 
+TMyApp = object(TApplication) 
+ParameterData: TParameterData; // Parameters for dialog. 
+fParameterData: file of TParameterData; // File hander for saving/loading the dialog data. 
 
-    constructor Init;                                  // Neuer Constructor
+constructor Init; // New constructor 
 
-    procedure InitStatusLine; virtual;                 // Statuszeile
-    procedure InitMenuBar; virtual;                    // Menü
-    procedure HandleEvent(var Event: TEvent); virtual; // Eventhandler
-    procedure OutOfMemory; virtual;                    // Wird aufgerufen, wen Speicher überläuft.
+procedure InitStatusLine; virtual; // Status line 
+procedure InitMenuBar; virtual; // Menu 
+procedure HandleEvent(var Event: TEvent); virtual; // event handler 
+procedure OutOfMemory; virtual; // Called when memory overflows. 
 
-    procedure MyParameter;                             // neue Funktion für einen Dialog.
-    procedure About;                                   // About Dialog.
-  end;
+procedure MyParameter; // new function for a dialog. 
+procedure About; // About Dialog. 
+end;
 ```
 
-Hier wird das About augerufen, wen im Menü About gewält wird.
+Here the About is called, which is selected in the About menu.
 
-```pascal
-  procedure TMyApp.HandleEvent(var Event: TEvent);
-  begin
-    inherited HandleEvent(Event);
+```pascal 
+procedure TMyApp.HandleEvent(var Event: TEvent); 
+begin 
+inherited HandleEvent(Event); 
 
-    if Event.What = evCommand then begin
-      case Event.Command of
-        cmAbout: begin
-          About;   // About Dialog aufrufen
-        end;
-        cmList: begin
-        end;
-        cmPara: begin
-          MyParameter;
-        end;
-        else begin
-          Exit;
-        end;
-      end;
-    end;
-    ClearEvent(Event);
-  end;
+if Event.What = evCommand then begin 
+case Event.Command of 
+cmAbout: begin 
+About; // Call About dialog 
+end; 
+cmList: begin 
+end; 
+cmPara: begin 
+MyParameters; 
+end; 
+else begin 
+exit; 
+end; 
+end; 
+end; 
+ClearEvent(Event); 
+end;
 ```
 
-About Dialog erstellen.
-Mit **TRext.Grow(...** kann man das Rect verkleinern und vergrössern.
-Mit **#13** kann man eine Zeilenumbruch einfügen.
-Mit **#3** wird der Text horizontal im Rect zentriert.
-Mit **#2** wird der Text rechtbündig geschrieben.
+Create About Dialog.
+With **TRext.Grow(...** you can shrink and enlarge the rect.
+You can insert a line break with **#13**.
+Using **#3** will center the text horizontally in the rect.
+With **#2** the text is written right-aligned.
 
-Mit **PLabel** könnte man auch Text ausgeben, aber für festen Text eignet sich **PStaticText** besser.
+You could also output text with **PLabel**, but **PStaticText** is better for fixed text.
 
-```pascal
-  procedure TMyApp.About;
-  var
-    Dlg: PDialog;
-    R: TRect;
-  begin
-    R.Assign(0, 0, 42, 11);
-    R.Move(1, 1);
-    Dlg := New(PDialog, Init(R, 'About'));
-    with Dlg^ do begin
-      Options := Options or ofCentered; // Dialog zentrieren
+```pascal 
+procedure TMyApp.About; 
+var 
+Dlg: PDialog; 
+R: TRect; 
+begin 
+R.Assign(0, 0, 42, 11); 
+R.Move(1, 1); 
+Dlg := New(PDialog, Init(R, 'About')); 
+with Dlg^ do begin 
+Options := Options or ofCentered; // Center dialog 
 
-      // StaticText einfügen.
-      R.Assign(2, 2, 40, 8);
-      Insert(New(PStaticText, Init(R,
-        #13 +
-        'Free Vison Tutorial 1.0' + #13 +
-        '2017' + #13 +
-        #3 + 'Zentriert' + #13 +
-        #2 + 'Rechts')));
-      R.Assign(16, 8, 26, 10);
-      Insert(New(PButton, Init(R, '~O~K', cmOK, bfDefault)));
-    end;
-    if ValidView(Dlg) <> nil then begin
-      Desktop^.ExecView(Dlg);           // Modal aufrufen, Funktionsergebniss wird nicht ausgewrtet.
-      Dispose(Dlg, Done);               // Dialog frei geben.
-    end;
-  end;
+// Insert StaticText. 
+R.Assign(2, 2, 40, 8); 
+Insert(New(PStaticText, Init(R, 
+#13+ 
+'Free Vision Tutorial 1.0' + #13 + 
+'2017' + #13 + 
+#3 + 'Centered' + #13 + 
+#2 + 'Right'))); 
+R.Assign(16, 8, 26, 10); 
+Insert(New(PButton, Init(R, '~O~K', cmOK, bfDefault))); 
+end; 
+if ValidView(Dlg) <> nil then begin 
+Desktop^.ExecView(Dlg); // Call modal, function result is not evaluated. 
+Dispose(Dlg, Done); // Release dialog. 
+end; 
+end;
 ```
-
-
