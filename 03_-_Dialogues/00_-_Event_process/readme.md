@@ -1,50 +1,48 @@
-# 03 - Dialoge
-## 00 - Event abarbeiten
+#03 - Dialogues
+## 00 - Process event
 
 ![image.png](image.png)
 
-Abarbeiten der Events, der Statuszeile und des Menu.
+Processing the events, the status line and the menu.
 
 ---
-Kommmandos die abgearbeitet werden.
+Commands that are processed.
 
 ```pascal
-const
-  cmAbout = 1001;     // About anzeigen
-  cmList = 1002;      // Datei Liste
+const 
+cmAbout = 1001; // Show About 
+cmList = 1002; // file list
 ```
 
-Der EventHandler ist auch ein Nachkommen.
+The EventHandler is also a descendant.
 
 ```pascal
-type
-  TMyApp = object(TApplication)
-    procedure InitStatusLine; virtual;                 // Statuszeile
-    procedure InitMenuBar; virtual;                    // Menü
-    procedure HandleEvent(var Event: TEvent); virtual; // Eventhandler
-  end;
+type.type 
+TMyApp = object(TApplication) 
+procedure InitStatusLine; virtual; // Status line 
+procedure InitMenuBar; virtual; // Menu 
+procedure HandleEvent(var Event: TEvent); virtual; // event handler 
+end;
 ```
 
-Abarbeiten der eigenen cmxxx Kommandos.
+Processing your own cmxxx commands.
 
-```pascal
-  procedure TMyApp.HandleEvent(var Event: TEvent);
-  begin
-    inherited HandleEvent(Event);
+```pascal 
+procedure TMyApp.HandleEvent(var Event: TEvent); 
+begin 
+inherited HandleEvent(Event); 
 
-    if Event.What = evCommand then begin
-      case Event.Command of
-        cmAbout: begin    // Mache was mit cmAbout.
-        end;
-        cmList: begin     // Mache was mit cmList.
-        end;
-        else begin
-          Exit;
-        end;
-      end;
-    end;
-    ClearEvent(Event);
-  end;
+if Event.What = evCommand then begin 
+case Event.Command of 
+cmAbout: begin // Do something with cmAbout. 
+end; 
+cmList: begin // Do something with cmList. 
+end; 
+else begin 
+exit; 
+end; 
+end; 
+end; 
+ClearEvent(Event); 
+end;
 ```
-
-
