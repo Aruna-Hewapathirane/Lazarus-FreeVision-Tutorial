@@ -51,6 +51,6 @@ NewItem('~E~itor', '', kbNoKey, cmAbout, hcEdit, nil))),
 
 NewSubMenu('~Help', hcHelp, NewMenu( 
 NewItem('~A~bout...', '', kbNoKey, cmAbout, hcAbout, nil)), nil))))));
-```
+
 end;
 ```
