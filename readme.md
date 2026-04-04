@@ -30,25 +30,15 @@ Borland Pascal:
 | Date | Changes
 | :---: | ---
 | May 1, 2023 | **Terminal Resize** intercept and react to it.
-
 | October 23, 2022 | Executable files removed from the tutorial (Project).
-
 | June 15, 2022 | **Table of Contents** added to the tutorial. ([Link](wiki.md))
-
 | June 5, 2022 | Tutorial for **Standard Dialogs** added.
-
 | May 30, 2022 | Tutorial for **Lists** added.
-
 | May 26, 2022 | All declarations of **TRect** replaced with **Rect**, as this is Free/Turbo Vision compliant.
-
 | April 11, 2022 | Tutorial integrated directly into the source code, using individual "readme.md" files in each folder.
-
 | March 15, 2020 | Fixed issue with FormatStr and 64-bit OS.
-
 | July 9, 2019 | **Hello World** bug fixed in HTML.
-
 | July 7, 2018 | Outline added.
-
 | July 1, 2018 | Help menu added.
 
 ![FreeVision](image.png)
