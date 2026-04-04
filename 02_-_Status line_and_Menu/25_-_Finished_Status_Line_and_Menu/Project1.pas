@@ -13,24 +13,16 @@ Unless you use <b>OS shell</b> or <b>Exit</b>, nothing happens.
 program Project1;
 
 uses
-
-App, // TApplication
-
+App,     // TApplication
 Objects, // Window area (TRect)
-
 Drivers, // Hotkey
-
-Views, // Event (cmQuit)
-
-MenuS; // Status bar
+Views,   // Event (cmQuit)
+MenuS;   // Status bar
 
 type
 TMyApp = object(TApplication)
-
 procedure InitStatusLine; virtual; // Status bar
-
-procedure InitMenuBar; virtual; // Menu
-
+procedure InitMenuBar; virtual;    // Menu
 end;
 
 (*
