@@ -7,24 +7,16 @@ Here, this is also done in a split format for clarity.
 *)
 //ruleral
 program Project1;
-
 uses
-
-App, // TApplication
-
+App,     // TApplication
 Objects, // Window area (TRect)
-
 Drivers, // Hotkey
-
-Views, // Event (cmQuit)
-
-Menu; // Status bar
+Views,   // Event (cmQuit)
+Menu;    // Status bar
 
 (*
 For custom commands, you need to define command code.
-
 It is recommended to use values ​​> 1000 to avoid conflicts with the standard codes.
-
 *)
 //code+
 const
@@ -35,17 +27,13 @@ cmAbout = 1001; // Display About
 
 (*
 For a menu, you need to inherit <b>InitMenuBar</b>.
-
 *)
 
 //code+
 type
 TMyApp = object(TApplication)
-
 procedure InitStatusLine; virtual; // Status bar
-
-procedure InitMenuBar; virtual; // Menu
-
+procedure InitMenuBar; virtual;    // Menu
 end;
 
 /code-
@@ -53,11 +41,8 @@ end;
 procedure TMyApp.InitStatusLine;
 
 var
-
-R: TRect; // Rectangle for the status bar position.
-
-P0: PStatusDef; // Pointer to the entire entry.
-
+R: TRect;                // Rectangle for the status bar position.
+P0: PStatusDef;          // Pointer to the entire entry.
 P1, P2, P3: PStatusItem; // Pointer to the individual hotkeys.
 
 begin
@@ -65,20 +50,14 @@ begin
 GetExtent(R);
 
 R.A.Y := R.B.Y - 1;
-
 P3 := NewStatusKey('~F1~ Help', kbF1, cmHelp, nil);
-
 P2 := NewStatusKey('~F10~ Menu', kbF10, cmMenu, P3);
-
 P1 := NewStatusKey('~Alt+X~ Exit Program', kbAltX, cmQuit, P2);
-
 P0 := NewStatusDef(0, $FFFF, P1, nil);
-
 StatusLine := New(PStatusLine, Init(R, P0));
-
 end;
 
-(*) Menu items can also be split using pointers.
+(* Menu items can also be split using pointers.
 Whether you nest or split them is a matter of preference.
 ``` can be used to insert a blank line.
 ``` is recommended if a dialog box opens for a menu item.
