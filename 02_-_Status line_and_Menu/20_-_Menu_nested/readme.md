@@ -24,23 +24,7 @@ GetExtent(R);
 
 R.A.Y := R.B.Y - 1;
 
-
-```pascal`
-```````````````````````````````````````)`````````````````````````````````
-`
-`
-
-`
-`
-`
-`
-`
-`
-```
-`````````````
-
-``
-... StatusLine := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
+StatusLine := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
 
 NewStatusKey('~Alt+X~ Exit Program', kbAltX, cmQuit,
 
