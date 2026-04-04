@@ -53,8 +53,7 @@ GetExtent(R);
 
 R.B.Y := R.A.Y + 1; // Set the menu position to the top row of the app.
 
-
-```pascal` MenuBar := New(PMenuBar, Init(R, NewMenu( 
+MenuBar := New(PMenuBar, Init(R, NewMenu( 
 NewSubMenu('~File', hcNoContext, NewMenu( 
 NewItem('~B~end', 'Alt-X', kbAltX, cmQuit, hcNoContext, 
 nil)), nil)))); 
