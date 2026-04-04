@@ -121,7 +121,7 @@ GetExtent(R);
 R.B.Y := R.A.Y + 1;
 
 
-``` MenuBar := New(PMenuBar, Init(R, NewMenu( 
+MenuBar := New(PMenuBar, Init(R, NewMenu( 
 NewSubMenu('~File', hcFile, NewMenu( 
 NewItem('~B~end', 'Alt-X', kbAltX, cmQuit, hcClose, nil)), 
 
@@ -141,9 +141,7 @@ MyApp: TMyApp;
 begin
 
 MyApp.Init; // Initialize
-
-MyApp.Run; // Execute
-
+MyApp.Run;  // Execute
 MyApp.Done; // Release
 
 end.
