@@ -1,122 +1,120 @@
-# 03 - Dialoge
-## 35 - Werte im Dialog merken
+# 03 - Dialogues
+## 35 - Remember values in the dialogue
 
 ![image.png](image.png)
 
-Bis jetzt gingen die Werte im Dialog immer wieder verloren, wen man diesen schliesste und wieder öffnete.
-Aus diesem Grund werden jetzt die Werte in einen Record gespeichert.
+Until now, the values in the dialogue were always lost whenever it was closed and reopened.
+For this reason, the values ​​are now saved in a record.
 
----
-  In diesem Record werden die Werte des Dialoges gespeichert.
-  Die Reihenfolge der Daten im Record **muss** genau gleich sein, wie bei der Erstellung der Komponenten, ansonten gibt es einen Kräsch.
-  Bei Turbo-Pascal musste ein **Word** anstelle von **LongWord** genommen werden, dies ist wichtig beim Portieren alter Anwendungen.
-
-```pascal
-type
-  TParameterData = record
-    Druck,
-    Schrift: longword;
-    Hinweis: string[50];
-  end;
-```
-
-Hier wird noch der Constructor vererbt, diesen Nachkomme wird gebraucht um die Dialogdaten mit Standard Werte zu laden.
+--- 
+The values of the dialog are stored in this record. 
+The order of the data in the record **must** be exactly the same as when the components were created, otherwise there will be a crash. 
+With Turbo Pascal a **Word** had to be used instead of **LongWord**, this is important when porting old applications.
 
 ```pascal
-type
-  TMyApp = object(TApplication)
-    ParameterData: TParameterData;                     // Daten für Parameter-Dialog
-    constructor Init;                                  // Neuer Constructor
-
-    procedure InitStatusLine; virtual;                 // Statuszeile
-    procedure InitMenuBar; virtual;                    // Menü
-    procedure HandleEvent(var Event: TEvent); virtual; // Eventhandler
-
-    procedure MyParameter;                             // neue Funktion für einen Dialog.
-  end;
+type.type 
+TParameterData = record 
+pressure, 
+font: longword; 
+Note: string[50]; 
+end;
 ```
 
-Der Constructoer welcher die Werte für den Dialog ladet.
-Die Datenstruktur für die RadioButtons ist einfach. 0 ist der erste Button, 1 der Zweite, 2 der Dritte, usw.
-Bei den Checkboxen macht man es am besten Binär. Im Beispiel werden der erste und dritte CheckBox gesetzt.
+Here the constructor is inherited; this descendant is needed to load the dialog data with standard values.
 
 ```pascal
-  constructor TMyApp.Init;
-  begin
-    inherited Init;     // Vorfahre aufrufen
-    with ParameterData do begin
-      Druck := %0101;
-      Schrift := 2;
-      Hinweis := 'Hello world';
-    end;
-  end;
+type.type 
+TMyApp = object(TApplication) 
+ParameterData: TParameterData; // Data for parameter dialog 
+constructor Init; // New constructor 
+
+procedure InitStatusLine; virtual; // Status line 
+procedure InitMenuBar; virtual; // Menu 
+procedure HandleEvent(var Event: TEvent); virtual; // event handler 
+
+procedure MyParameter; // new function for a dialog. 
+end;
 ```
 
-Der Dialog wird jetzt mit Werten geladen.
-Dies macht man, sobald man fertig ist mit Komponenten ertstellen.
+The constructor that loads the values for the dialog.
+The data structure for the RadioButtons is simple. 0 is the first button, 1 is the second, 2 is the third, etc.
+When it comes to checkboxes, it's best to do it in binary. In the example, the first and third CheckBox are set.
 
-```pascal
-  procedure TMyApp.MyParameter;
-  var
-    Dlg: PDialog;
-    R: TRect;
-    dummy: word;
-    View: PView;
-  begin
-    R.Assign(0, 0, 35, 15);
-    R.Move(23, 3);
-    Dlg := New(PDialog, Init(R, 'Parameter'));
-    with Dlg^ do begin
-
-      // CheckBoxen
-      R.Assign(2, 3, 18, 7);
-      View := New(PCheckBoxes, Init(R,
-        NewSItem('~D~atei',
-        NewSItem('~Z~eile',
-        NewSItem('D~a~tum',
-        NewSItem('~Z~eit',
-        nil))))));
-      Insert(View);
-      // Label für CheckGroup.
-      R.Assign(2, 2, 10, 3);
-      Insert(New(PLabel, Init(R, 'Dr~u~cken', View)));
-
-      // RadioButton
-      R.Assign(21, 3, 33, 6);
-      View := New(PRadioButtons, Init(R,
-        NewSItem('~G~ross',
-        NewSItem('~M~ittel',
-        NewSItem('~K~lein',
-        nil)))));
-      Insert(View);
-      // Label für RadioGroup.
-      R.Assign(20, 2, 31, 3);
-      Insert(New(PLabel, Init(R, '~S~chrift', View)));
-
-      // Edit Zeile
-      R.Assign(3, 10, 32, 11);
-      View := New(PInputLine, Init(R, 50));
-      Insert(View);
-      // Label für Edit Zeile
-      R.Assign(2, 9, 10, 10);
-      Insert(New(PLabel, Init(R, '~H~inweis', View)));
-
-      // Ok-Button
-      R.Assign(7, 12, 17, 14);
-      Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault)));
-
-      // Schliessen-Button
-      R.Assign(19, 12, 32, 14);
-      Insert(new(PButton, Init(R, '~A~bbruch', cmCancel, bfNormal)));
-    end;
-    Dlg^.SetData(ParameterData);      // Dialog mit den Werten laden.
-    dummy := Desktop^.ExecView(Dlg);  // Dialog ausführen.
-    if dummy = cmOK then begin        // Wen Dialog mit Ok beenden, dann Daten vom Dialog in Record laden.
-      Dlg^.GetData(ParameterData);
-    end;
-
-    Dispose(Dlg, Done);               // Dialog und Speicher frei geben.
-  end;
+```pascal 
+constructor TMyApp.Init; 
+begin 
+inherited Init; // Call ancestor 
+with ParameterData do begin 
+pressure := %0101; 
+font := 2; 
+Note := 'Hello world'; 
+end; 
+end;
 ```
 
+The dialog is now loaded with values.
+You do this as soon as you have finished creating components.
 
+```pascal 
+procedure TMyApp.MyParameter; 
+var 
+Dlg: PDialog; 
+R: TRect; 
+dummy: word; 
+View: PView; 
+begin 
+R.Assign(0, 0, 35, 15); 
+R.Move(23, 3); 
+Dlg := New(PDialog, Init(R, 'Parameter')); 
+with Dlg^ do begin 
+
+// CheckBoxes 
+R.Assign(2, 3, 18, 7); 
+View := New(PCheckBoxes, Init(R, 
+NewSItem('~File', 
+NewSItem('~row~row', 
+NewSItem('D~a~tum', 
+NewSItem('~Time~', 
+nil)))))); 
+Insert(View); 
+// Label for CheckGroup. 
+R.Assign(2, 2, 10, 3); 
+Insert(New(PLabel, Init(R, 'Press', View))); 
+
+// RadioButton 
+R.Assign(21, 3, 33, 6); 
+View := New(PRadioButtons, Init(R, 
+NewSItem('~Big~ross', 
+NewSItem('~Medium', 
+NewSItem('~Small', 
+nile))))); 
+Insert(View); 
+// Label for RadioGroup. 
+R.Assign(20, 2, 31, 3); 
+Insert(New(PLabel, Init(R, '~Font', View))); 
+
+// Edit line 
+R.Assign(3, 10, 32, 11); 
+View := New(PInputLine, Init(R, 50)); 
+Insert(View); 
+// Label for edit line 
+R.Assign(2, 9, 10, 10); 
+Insert(New(PLabel, Init(R, '~H~inweis', View))); 
+
+// Ok button 
+R.Assign(7, 12, 17, 14); 
+Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault))); 
+
+// Close button 
+R.Assign(19, 12, 32, 14); 
+Insert(new(PButton, Init(R, '~A~abort', cmCancel, bfNormal))); 
+end; 
+Dlg^.SetData(ParameterData); // Load dialog with the values. 
+dummy := Desktop^.ExecView(Dlg); // Execute dialog. 
+if dummy = cmOK then begin // If you end the dialog with Ok, then load data from the dialog into Record. 
+Dlg^.GetData(ParameterData); 
+end; 
+
+Dispose(Dlg, Done); // Free up dialog and memory. 
+end;
+```
