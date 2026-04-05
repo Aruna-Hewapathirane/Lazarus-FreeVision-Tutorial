@@ -1,117 +1,165 @@
 //image image.png
 (*
-Wen man immer wieder die gleichen Dialog braucht, packt man diesen am besten als Komponente in eine Unit.
-Dazu schreibt man einen Nachkommen von <b>TDialog</b>.
-Als Beispiel wird hier ein About-Dialog gebaut.
+If you need the same dialogs repeatedly, it's best to put them as a component in a unit.
+To do this, write a descendant of <b>TDialog</b>.
+As an example, an About dialog is built here.
 *)
-//lineal
+//ruleral
 program Project1;
 
 uses
-  App,      // TApplication
-  Objects,  // Fensterbereich (TRect)
-  Drivers,  // Hotkey
-  Views,    // Ereigniss (cmQuit)
-  Menus,    // Statuszeile
-  MsgBox,   // Messageboxen
-  Dialogs,  // Dialoge
-  MyDialog;
+App, // TApplication
+Objects, // Window area (TRect)
+Drivers, // Hotkey
+Views, // Events (cmQuit)
+Menus, // Status bar
+MsgBox, // Message boxes
+Dialogs, // Dialogs
+MyDialog;
 
 const
-  cmAbout = 1001;     // About anzeigen
+cmAbout = 1001; // Display About
 
 type
-  TMyApp = object(TApplication)
-    procedure InitStatusLine; virtual;                 // Statuszeile
-    procedure InitMenuBar; virtual;                    // Menü
-    procedure HandleEvent(var Event: TEvent); virtual; // Eventhandler
-    procedure OutOfMemory; virtual;                    // Wird aufgerufen, wen Speicher überläuft.
-  end;
+TMyApp = object(TApplication)
 
-  procedure TMyApp.InitStatusLine;
-  var
-    R: TRect;              // Rechteck für die Statuszeilen Position.
-  begin
-    GetExtent(R);
-    R.A.Y := R.B.Y - 1;
+procedure InitStatusLine; virtual; // Status bar
 
-    StatusLine := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
-      NewStatusKey('~Alt+X~ Programm beenden', kbAltX, cmQuit,
-      NewStatusKey('~F10~ Menu', kbF10, cmMenu,
-      NewStatusKey('~F1~ About...', kbF1, cmAbout, nil))), nil)));
-  end;
+procedure InitMenuBar; virtual; // Menu
 
-  procedure TMyApp.InitMenuBar;
-  var
-    R: TRect;             // Rechteck für die Menüzeilen-Position.
-  begin
-    GetExtent(R);
-    R.B.Y := R.A.Y + 1;
+procedure HandleEvent(var Event: TEvent); virtual; // Event handler
 
-    MenuBar := New(PMenuBar, Init(R, NewMenu(
-      NewSubMenu('~D~atei', hcNoContext, NewMenu(
-        NewItem('~B~eenden', 'Alt-X', kbAltX, cmQuit, hcNoContext, nil)),
-      NewSubMenu('~H~ilfe', hcNoContext, NewMenu(
-        NewItem('~A~bout...', 'F1', kbF1, cmAbout, hcNoContext, nil)), nil)))));
-  end;
+procedure OutOfMemory; virtual; // Called when memory overflows.
 
-(*
-Hier wird der About-Dialog geladen und anschliessend bei Close wieder frei gegeben.
-*)
-//code+
-  procedure TMyApp.HandleEvent(var Event: TEvent);
-  var
-    AboutDialog: PMyAbout;
-  begin
-    inherited HandleEvent(Event);
+end;
 
-    if Event.What = evCommand then begin
-      case Event.Command of
-        cmAbout: begin
-          AboutDialog := New(PMyAbout, Init);         // Neurer Dialog erzeugen.
-          if ValidView(AboutDialog) <> nil then begin // Prüfen ob genügend Speicher.
-            Desktop^.ExecView(AboutDialog);           // Dialog About ausführen.
-            Dispose(AboutDialog, Done);               // Dialog und Speicher frei geben.
-          end;
-        end;
-        else begin
-          Exit;
-        end;
-      end;
-    end;
-    ClearEvent(Event);
-  end;
-//code-
-
-  procedure TMyApp.OutOfMemory;
-  begin
-    MessageBox('Zu wenig Arbeitsspeicher !', nil, mfError + mfOkButton);
-  end;
+procedure TMyApp.InitStatusLine;
 
 var
-  MyApp: TMyApp;
+
+R: TRect; // Rectangle for the status bar position.
 
 begin
-  MyApp.Init;   // Inizialisieren
-  MyApp.Run;    // Abarbeiten
-  MyApp.Done;   // Freigeben
 
-//lineal
+GetExtent(R);
+
+R.A.Y := R.B.Y - 1;
+
+StatusLine := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
+
+NewStatusKey('~Alt+X~ Exit Program', kbAltX, cmQuit,
+
+NewStatusKey('~F10~ Menu', kbF10, cmMenu,
+
+NewStatusKey('~F1~ About...', kbF1, cmAbout, nil))), nil)));
+
+end;
+
+procedure TMyApp.InitMenuBar;
+
+var
+
+R: TRect; // Rectangle for the menu bar position.
+
+begin
+
+GetExtent(R);
+
+R.B.Y := R.A.Y + 1;
+
+MenuBar := New(PMenuBar, Init(R, NewMenu(
+NewSubMenu('~D~atei', hcNoContext, NewMenu(
+NewItem('~B~eenden', 'Alt-X', kbAltX, cmQuit, hcNoContext, nil)),
+
+NewSubMenu('~H~ilfe', hcNoContext, NewMenu(
+NewItem('~A~bout...', 'F1', kbF1, cmAbout, hcNoContext, nil)), nil)))));
+end;
+
 (*
-<b>Unit mit dem neuen Dialog.</b>
+The About dialog is loaded here and then released again when the app is closed.
+
 *)
+
+//code+
+
+procedure TMyApp.HandleEvent(var Event: TEvent);
+
+var
+
+AboutDialog: PMyAbout;
+
+begin
+
+inherited HandleEvent(Event);
+
+
+if Event.What = evCommand then begin
+
+case Event.Command of
+
+cmAbout: begin
+
+AboutDialog := New(PMyAbout, Init); // Create a new dialog.
+
+if ValidView(AboutDialog) <> nil then begin // Check if there is enough memory.
+
+Desktop^.ExecView(AboutDialog); // Execute the About dialog.
+
+Dispose(AboutDialog, Done); // Release the dialog and memory.
+
+end;
+
+end;
+
+else begin
+
+Exit;
+
+end;
+
+end;
+
+end;
+
+ClearEvent(Event);
+
+end;
+
+//code-
+
+procedure TMyApp.OutOfMemory;
+
+begin
+
+MessageBox('Not enough memory!', nil, mfError + mfOkButton);
+
+end;
+
+var
+
+MyApp: TMyApp;
+
+begin
+
+MyApp.Init; // Initialize
+MyApp.Run; // Process
+MyApp.Done; // Release
+//ruler
+(*
+<b>Unit with the new dialog.</b>
+*)
+
 //includepascal mydialog.pas head
 
 (*
-Für den Dialog muss ein neuer Konstruktor erzeugt werden.
-Noch ein Hinweis zu StaticText, wen man eine Leerzeile einfügen will, muss man <b>#13#32#13</b> schreiben, bei <b>#13#13</b>, wird nur ein einfacher Zeilenumbruch ausgefühert.
+A new constructor must be created for the dialog.
+A note about StaticText: to insert a blank line, you must write <b>#13#32#13</b>. <b>#13#13</b> will only insert a simple line break.
 *)
 //includepascal mydialog.pas interface
 
 (*
-Im Konstruktor werden die Dialog-Komponeten erzeugt.
+The dialog components are created in the constructor.
 *)
 //includepascal mydialog.pas implementation
 
 end.
-
