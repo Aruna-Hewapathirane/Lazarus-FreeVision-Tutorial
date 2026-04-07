@@ -1,99 +1,138 @@
-# 04 - Dialoge als Komponente
-## 10 - Komponenten zur Laufzeit modifizieren
+# 04 - Dialogs as Components
+## 10 - Modifying Components at Runtime
 
 ![image.png](image.png)
 
-In diesem Beispiel wird gezeigt, wie man Komponenten zu Laufzeit ändern kann.
-Dafür wird ein Button verwendet, bei dem sich die Bezeichnung bei jedem Klick erhöht.
+This example shows how to modify components at runtime.
+
+A button is used, whose label increments with each click.
 
 ---
-**Unit mit dem neuen Dialog.**
+**Unit with the new dialog.**
+
 <br>
-Der Dialog mit dem Zähler-Button.
+The dialog with the counter button.
 
 ```pascal
 unit MyDialog;
 
 ```
 
-Will man eine Komponente zur Laufzeit modifizieren, dann muss man sie deklarieren, ansonsten kann man nicht mehr auf sie zugreifen.
-Direkt mit **Insert(New(...** geht nicht mehr.
+To modify a component at runtime, you must declare it; otherwise, you can no longer access it.
+
+Using **Insert(New(...)** directly no longer works.
 
 ```pascal
 type
-  PMyDialog = ^TMyDialog;
-  TMyDialog = object(TDialog)
-    CounterButton: PButton; // Button mit Zähler.
-    constructor Init;
-    procedure HandleEvent(var Event: TEvent); virtual;
-  end;
+PMyDialog = ^TMyDialog;
+
+TMyDialog = object(TDialog)
+CounterButton: PButton; // Button with counter.
+
+constructor Init;
+
+procedure HandleEvent(var Event: TEvent); virtual;
+
+end;
 
 ```
 
-Im Konstruktor sieht man, das man den Umweg über der **CounterButton** macht.
-**CounterButton** wird für die Modifikation gebraucht.
+In the constructor, you can see that the workaround is via the **CounterButton**.
+
+**CounterButton** is needed for the modification.
 
 ```pascal
 const
-  cmCounter = 1003;       // Wird lokal für den Zähler-Button gebraucht.
+cmCounter = 1003; // Used locally for the counter button.
 
 constructor TMyDialog.Init;
+
 var
-  R: TRect;
+R: TRect;
+
 begin
-  R.Assign(0, 0, 42, 11);
-  R.Move(23, 3);
-  inherited Init(R, 'Mein Dialog');
 
-  // StaticText
-  R.Assign(5, 2, 41, 8);
-  Insert(new(PStaticText, Init(R, 'Rechter Button z' + #132 + 'hlt Counter hoch')));
+R.Assign(0, 0, 42, 11);
 
-  // Button, bei den der Titel geändert wird.
-  R.Assign(19, 8, 32, 10);
-  CounterButton := new(PButton, Init(R, '    ', cmCounter, bfNormal));
-  CounterButton^.Title^ := '1';
+R.Move(23, 3);
 
-  Insert(CounterButton);
+inherited Init(R, 'My Dialog');
 
-  // Ok-Button
-  R.Assign(7, 8, 17, 10);
-  Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault)));
+/ StaticText
+R.Assign(5, 2, 41, 8);
+
+Insert(new(PStaticText, Init(R, 'Right Button z' + #132 + 'increments counter')));
+
+// Button that changes the title.
+
+R.Assign(19, 8, 32, 10);
+
+CounterButton := new(PButton, Init(R, ' ', cmCounter, bfNormal));
+
+CounterButton^.Title^ := '1';
+
+Insert(CounterButton);
+
+// OK button
+
+R.Assign(7, 8, 17, 10);
+
+Insert(new(PButton, Init(R, '~O~K', cmOK, bfDefault)));
+
 end;
 
 ```
 
-Im EventHandle, wird die Zahl im Button beim Drücken erhöht.
-Das sieht man, warum man den **CounterButton** braucht, ohne dem hätte man keinen Zugriff auf **Titel**.
-Wichtig, wen man eine Komponente ändert, muss man mit **Draw** die Komponente neu zeichnen, ansonsten sieht man den geänderten Wert nicht.
+In the event handle, the number on the button is incremented when pressed.
+
+This shows why the **CounterButton** is needed; without it, there would be no access to the **Title**.
+
+Important if When you change a component, you must redraw it using **Draw**; otherwise, the changed value won't be visible.
 
 ```pascal
+
 procedure TMyDialog.HandleEvent(var Event: TEvent);
+
 var
-  Counter: integer;
+Counter: integer;
+
 begin
-  inherited HandleEvent(Event);
 
-  case Event.What of
-    evCommand: begin
-      case Event.Command of
-        cmCounter: begin
-          Counter := StrToInt(CounterButton^.Title^); // Titel des Button auslesen.
-          Inc(Counter);                               // Counter erhöhen.
-          if Counter > 9999 then begin                // Auf Überlauf prüfen, weil nur 4 Zeichen zur Verfügung.
-            Counter := 9999;
-          end;
-          CounterButton^.Title^ := IntToStr(Counter); // Neuer Titel an Button übergeben.
+inherited HandleEvent(Event);
 
-          CounterButton^.Draw;                        // Button neu zeichnen.
-          ClearEvent(Event);                          // Event beenden.
-        end;
-      end;
-    end;
-  end;
+case Event.What of
+
+evCommand: begin
+
+case Event.Command of
+cmCounter: begin
+
+Counter := StrToInt(CounterButton^.Title^); // Read the button's title.
+
+Inc(Counter); // Increment the counter.
+
+if Counter > 9999 then begin // Check for overflow, as only 4 characters are available.
+
+Counter := 9999;
 
 end;
 
+CounterButton^.Title^ := IntToStr(Counter); // Assign the new title to the button.
+
+CounterButton^.Draw; // Redraw the button.
+
+ClearEvent(Event); // End the event.
+
+end;
+
+end;
+
+end;
+
+end;
+
+
+end;
+
+
 ```
-
-
