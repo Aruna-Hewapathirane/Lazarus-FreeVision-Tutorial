@@ -1,119 +1,178 @@
 //image image.png
 (*
-In diesem Beispiel wird gezeigt, wie man Komponenten zu Laufzeit ändern kann.
-Dafür wird ein Button verwendet, bei dem sich die Bezeichnung bei jedem Klick erhöht.
+This example shows how to modify components at runtime.
+
+It uses a button whose label increments with each click.
+
 *)
+
 program Project1;
 
 uses
-  App,      // TApplication
-  Objects,  // Fensterbereich (TRect)
-  Drivers,  // Hotkey
-  Views,    // Ereigniss (cmQuit)
-  Menus,    // Statuszeile
-  MsgBox,   // Messageboxen
-  Dialogs,  // Dialoge
-  MyDialog;
+
+App, // TApplication
+
+Objects, // Window area (TRect)
+
+Drivers, // Hotkey
+
+Views, // Events (cmQuit)
+
+Menu, // Status bar
+
+MsgBox, // Message boxes
+
+Dialogs, // Dialogs
+
+MyDialog;
 
 const
-  cmAbout = 1001;     // About anzeigen
+
+cmAbout = 1001; // Display About
 
 type
-  TMyApp = object(TApplication)
-    procedure InitStatusLine; virtual;                 // Statuszeile
-    procedure InitMenuBar; virtual;                    // Menü
-    procedure HandleEvent(var Event: TEvent); virtual; // Eventhandler
-    procedure OutOfMemory; virtual;                    // Wird aufgerufen, wen Speicher überläuft.
-  end;
 
-  procedure TMyApp.InitStatusLine;
-  var
-    R: TRect;              // Rechteck für die Statuszeilen Position.
-  begin
-    GetExtent(R);
-    R.A.Y := R.B.Y - 1;
+TMyApp = object(TApplication)
 
-    StatusLine := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
-      NewStatusKey('~Alt+X~ Programm beenden', kbAltX, cmQuit,
-      NewStatusKey('~F10~ Menu', kbF10, cmMenu,
-      NewStatusKey('~F1~ About...', kbF1, cmAbout, nil))), nil)));
-  end;
+procedure InitStatusLine; virtual; // Status bar
 
-  procedure TMyApp.InitMenuBar;
-  var
-    R: TRect;                       // Rechteck für die Menüzeilen-Position.
-  begin
-    GetExtent(R);
-    R.B.Y := R.A.Y + 1;
+procedure InitMenuBar; virtual; // Menu
 
-    MenuBar := New(PMenuBar, Init(R, NewMenu(
-      NewSubMenu('~D~atei', hcNoContext, NewMenu(
-        NewItem('~B~eenden', 'Alt-X', kbAltX, cmQuit, hcNoContext, nil)),
-      NewSubMenu('~O~ption', hcNoContext, NewMenu(
-        NewItem('Dia~l~og...', '', kbNoKey, cmAbout, hcNoContext, nil)), nil)))));
-  end;
+procedure HandleEvent(var Event: TEvent); virtual; // Event handler
 
-  procedure TMyApp.HandleEvent(var Event: TEvent);
-  var
-    MyDialog: PMyDialog;
-  begin
-    inherited HandleEvent(Event);
+procedure OutOfMemory; virtual; // Called when memory overflows.
 
-    if Event.What = evCommand then begin
-      case Event.Command of                        // About Dialog
-        cmAbout: begin
-          MyDialog := New(PMyDialog, Init);
-          if ValidView(MyDialog) <> nil then begin // Prüfen ob genügend Speicher.
-            Desktop^.ExecView(MyDialog);           // Dialog About ausführen.
-            Dispose(MyDialog, Done);               // Dialog und Speicher frei geben.
-          end;
-        end;
-        else begin
-          Exit;
-        end;
-      end;
-    end;
-    ClearEvent(Event);
-  end;
+end;
 
-  procedure TMyApp.OutOfMemory;
-  begin
-    MessageBox('Zu wenig Arbeitsspeicher !', nil, mfError + mfOkButton);
-  end;
+procedure TMyApp.InitStatusLine;
 
 var
-  MyApp: TMyApp;
+R: TRect; // Rectangle for the status bar position.
 
 begin
-  MyApp.Init;   // Inizialisieren
-  MyApp.Run;    // Abarbeiten
-  MyApp.Done;   // Freigeben
 
-//lineal
+GetExtent(R);
+
+R.A.Y := R.B.Y - 1;
+
+StatusLine := New(PStatusLine, Init(R, NewStatusDef(0, $FFFF,
+
+NewStatusKey('~Alt+X~ Exit Program', kbAltX, cmQuit,
+
+NewStatusKey('~F10~ Menu', kbF10, cmMenu,
+
+NewStatusKey('~F1~ About...', kbF1, cmAbout, nil))), nil)));
+
+end;
+
+procedure TMyApp.InitMenuBar;
+
+var
+
+R: TRect; // Rectangle for the menu bar position.
+
+begin
+
+GetExtent(R);
+
+R.B.Y := R.A.Y + 1;
+
+MenuBar := New(PMenuBar, Init(R, NewMenu( 
+NewSubMenu('~File', hcNoContext, NewMenu( 
+NewItem('~B~end', 'Alt-X', kbAltX, cmQuit, hcNoContext, nil)), 
+NewSubMenu('~O~ption', hcNoContext, NewMenu( 
+NewItem('Dia~l~og...', '', kbNoKey, cmAbout, hcNoContext, nil)), nil))))); 
+end; 
+
+procedure TMyApp.HandleEvent(var Event: TEvent); 
+var 
+MyDialog: PMyDialog; 
+begin 
+inherited HandleEvent(Event); 
+
+if Event.What = evCommand then begin
+
+case Event.Command of // About Dialog
+
+cmAbout: begin
+
+MyDialog := New(PMyDialog, Init);
+
+if ValidView(MyDialog) <> nil then begin // Check if there is enough memory.
+
+Desktop^.ExecView(MyDialog); // Execute the About dialog.
+
+Dispose(MyDialog, Done); // Release the dialog and memory.
+
+end;
+
+end;
+
+else begin
+
+Exit;
+
+end;
+
+end;
+
+end;
+
+ClearEvent(Event);
+
+end;
+
+procedure TMyApp.OutOfMemory;
+
+begin
+
+MessageBox('Not enough memory!', nil, mfError + mfOkButton);
+
+end;
+
+var
+
+MyApp: TMyApp;
+
+begin
+
+MyApp.Init; // Initialize
+
+MyApp.Run; // Execute
+
+MyApp.Done; // Release
+
+//ruler
 (*
-<b>Unit mit dem neuen Dialog.</b>
+<b>Unit with the new dialog.</b>
+
 <br>
-Der Dialog mit dem Zähler-Button.
+The dialog with the counter button.
+
 *)
-//includepascal mydialog.pas head
+//includepas mydialog.pas head
 
 (*
-Will man eine Komponente zur Laufzeit modifizieren, dann muss man sie deklarieren, ansonsten kann man nicht mehr auf sie zugreifen.
-Direkt mit <b>Insert(New(...</b> geht nicht mehr.
+If you want to modify a component at runtime, you have to declare it; otherwise, you can no longer access it. Directly using <b>Insert(New(...</b>) is no longer possible.
+
 *)
 //includepascal mydialog.pas type
 
 (*
-Im Konstruktor sieht man, das man den Umweg über der <b>CounterButton</b> macht.
-<b>CounterButton</b> wird für die Modifikation gebraucht.
+In the constructor, you can see that you're taking a detour via the <b>CounterButton</b>.
+
+<b>CounterButton</b> is needed for the modification.
+
 *)
 //includepascal mydialog.pas init
 
 (*
-Im EventHandle, wird die Zahl im Button beim Drücken erhöht.
-Das sieht man, warum man den <b>CounterButton</b> braucht, ohne dem hätte man keinen Zugriff auf <b>Titel</b>.
-Wichtig, wen man eine Komponente ändert, muss man mit <b>Draw</b> die Komponente neu zeichnen, ansonsten sieht man den geänderten Wert nicht.
+In the event handle, the number in the button is incremented when it's pressed. This shows why you need the <b>CounterButton</b>; without it, you wouldn't have access to <b>Title</b>
+
+Important: When modifying a component, you must redraw it using <b>Draw</b>; otherwise, the changed value will not be visible.
+
 *)
+
 //includepascal mydialog.pas handleevent
 
 end.
